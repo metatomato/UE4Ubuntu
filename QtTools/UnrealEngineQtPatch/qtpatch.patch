@@ -1,0 +1,825 @@
+From f74d2a16ae7dcb028f13deb441afaa0a31f578d1 Mon Sep 17 00:00:00 2001
+From: metatomato <metatomato@iglou.gl>
+Date: Mon, 24 Nov 2014 21:21:08 +0100
+Subject: [PATCH 1/3] Add QtCreator Developper Plugin
+
+---
+ .../Developer/QtCreatorSourceCodeAccess/.gitignore |  18 +++
+ .../QtCreatorSourceCodeAccess.uplugin              |  22 ++++
+ .../Developer/QtCreatorSourceCodeAccess/README.md  |  12 ++
+ .../Resources/Icon128.png                          | Bin 0 -> 12739 bytes
+ .../Private/QtCreatorSourceCodeAccessModule.cpp    |  38 +++++++
+ .../Private/QtCreatorSourceCodeAccessModule.h      |  35 ++++++
+ .../Private/QtCreatorSourceCodeAccessPrivatePCH.h  |  26 +++++
+ .../Private/QtCreatorSourceCodeAccessor.cpp        | 123 +++++++++++++++++++++
+ .../Private/QtCreatorSourceCodeAccessor.h          |  39 +++++++
+ .../QtCreatorSourceCodeAccess.Build.cs             |  38 +++++++
+ 10 files changed, 351 insertions(+)
+ create mode 100644 Engine/Plugins/Developer/QtCreatorSourceCodeAccess/.gitignore
+ create mode 100644 Engine/Plugins/Developer/QtCreatorSourceCodeAccess/QtCreatorSourceCodeAccess.uplugin
+ create mode 100644 Engine/Plugins/Developer/QtCreatorSourceCodeAccess/README.md
+ create mode 100644 Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Resources/Icon128.png
+ create mode 100644 Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessModule.cpp
+ create mode 100644 Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessModule.h
+ create mode 100644 Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessPrivatePCH.h
+ create mode 100644 Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessor.cpp
+ create mode 100644 Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessor.h
+ create mode 100644 Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/QtCreatorSourceCodeAccess.Build.cs
+
+diff --git a/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/.gitignore b/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/.gitignore
+new file mode 100644
+index 0000000..39ed9af
+--- /dev/null
++++ b/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/.gitignore
+@@ -0,0 +1,18 @@
++## Ignore output
++Binaries
++
++##  Ignore backup files 
++*~
++
++## Ignore project files in the root
++/*.sln
++*.suo
++*.opensdf
++*.sdf
++/*.xcodeproj
++/Makefile
++/CMakeLists.txt
++/.idea/**
++
++## Ignore IDE project generated files
++*.user
+diff --git a/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/QtCreatorSourceCodeAccess.uplugin b/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/QtCreatorSourceCodeAccess.uplugin
+new file mode 100644
+index 0000000..089689a
+--- /dev/null
++++ b/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/QtCreatorSourceCodeAccess.uplugin
+@@ -0,0 +1,22 @@
++{
++	"FileVersion" : 3,
++	"FriendlyName" : "Qt Creator Source Code Access",
++	"Version" : 1,
++	"VersionName" : "1.0",
++	"CreatedBy" : "K. Ernest 'iFire' Lee",
++	"CreatedByURL" : "https://github.com/fire/QtCreatorSourceCodeAccess.git",
++	"EngineVersion" : "",
++	"Description" : "Allows access to source code with Qt Creator.",
++	"Category" : "Developer.Source Code Access",
++	"EnabledByDefault" : true,
++	
++	"Modules" :
++	[
++		{
++			"Name" : "QtCreatorSourceCodeAccess",
++			"Type" : "Developer",
++			"WhitelistPlatforms" : [ "Linux" ],
++			"LoadingPhase" : "PreDefault"
++		}
++	]
++}
+diff --git a/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/README.md b/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/README.md
+new file mode 100644
+index 0000000..12e9ca6
+--- /dev/null
++++ b/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/README.md
+@@ -0,0 +1,12 @@
++QtCreatorSourceCodeAccess
++==============================
++
++Clone this to your UnrealEngine directory at `Engine/Plugins/Developer`.
++
++Enable this as your code view editor.
++
++Add to Engine/Config/Linux/LinuxEngine.ini 
++
++[/Script/SourceCodeAccess.SourceCodeAccessSettings]
++PreferredAccessor=QtCreatorSourceCodeAccessor
++
+diff --git a/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Resources/Icon128.png b/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Resources/Icon128.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..3033ae0eddc8c201daf7a3ffffe1ff15e776a7f3
+GIT binary patch
+literal 12739
+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
+NkdaUnuM;&6{y(C2jWz%P
+
+literal 0
+HcmV?d00001
+
+diff --git a/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessModule.cpp b/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessModule.cpp
+new file mode 100644
+index 0000000..a26289a
+--- /dev/null
++++ b/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessModule.cpp
+@@ -0,0 +1,38 @@
++/* Copyright (c) 2014 K. Ernest 'iFire' Lee
++
++Permission is hereby granted, free of charge, to any person obtaining
++a copy of this software and associated documentation files (the
++"Software"), to deal in the Software without restriction, including
++without limitation the rights to use, copy, modify, merge, publish,
++distribute, sublicense, and/or sell copies of the Software, and to
++permit persons to whom the Software is furnished to do so, subject to
++the following conditions:
++
++The above copyright notice and this permission notice shall be
++included in all copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
++LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
++OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
++WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
++
++#include "QtCreatorSourceCodeAccessPrivatePCH.h"
++#include "Runtime/Core/Public/Features/IModularFeatures.h"
++#include "QtCreatorSourceCodeAccessModule.h"
++
++IMPLEMENT_MODULE( FXCodeSourceCodeAccessModule, QtCreatorSourceCodeAccess );
++
++void FXCodeSourceCodeAccessModule::StartupModule()
++{
++	// Bind our source control provider to the editor
++	IModularFeatures::Get().RegisterModularFeature(TEXT("SourceCodeAccessor"), &QtCreatorSourceCodeAccessor );
++}
++
++void FXCodeSourceCodeAccessModule::ShutdownModule()
++{
++	// unbind provider from editor
++	IModularFeatures::Get().UnregisterModularFeature(TEXT("SourceCodeAccessor"), &QtCreatorSourceCodeAccessor);
++}
+diff --git a/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessModule.h b/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessModule.h
+new file mode 100644
+index 0000000..02796e9
+--- /dev/null
++++ b/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessModule.h
+@@ -0,0 +1,35 @@
++/* Copyright (c) 2014 K. Ernest 'iFire' Lee
++
++Permission is hereby granted, free of charge, to any person obtaining
++a copy of this software and associated documentation files (the
++"Software"), to deal in the Software without restriction, including
++without limitation the rights to use, copy, modify, merge, publish,
++distribute, sublicense, and/or sell copies of the Software, and to
++permit persons to whom the Software is furnished to do so, subject to
++the following conditions:
++
++The above copyright notice and this permission notice shall be
++included in all copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
++LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
++OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
++WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
++
++#pragma once
++
++#include "QtCreatorSourceCodeAccessor.h"
++
++class FXCodeSourceCodeAccessModule : public IModuleInterface
++{
++public:
++	/** IModuleInterface implementation */
++	virtual void StartupModule() override;
++	virtual void ShutdownModule() override;
++
++private:
++	FXCodeSourceCodeAccessor QtCreatorSourceCodeAccessor;
++};
+diff --git a/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessPrivatePCH.h b/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessPrivatePCH.h
+new file mode 100644
+index 0000000..7917ca6
+--- /dev/null
++++ b/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessPrivatePCH.h
+@@ -0,0 +1,26 @@
++/* Copyright (c) 2014 K. Ernest 'iFire' Lee
++
++Permission is hereby granted, free of charge, to any person obtaining
++a copy of this software and associated documentation files (the
++"Software"), to deal in the Software without restriction, including
++without limitation the rights to use, copy, modify, merge, publish,
++distribute, sublicense, and/or sell copies of the Software, and to
++permit persons to whom the Software is furnished to do so, subject to
++the following conditions:
++
++The above copyright notice and this permission notice shall be
++included in all copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
++LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
++OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
++WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
++
++#pragma once
++
++#include "Core.h"
++#include "ModuleManager.h"
++#include "ISourceCodeAccessModule.h"
+diff --git a/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessor.cpp b/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessor.cpp
+new file mode 100644
+index 0000000..145684a
+--- /dev/null
++++ b/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessor.cpp
+@@ -0,0 +1,123 @@
++ /* Copyright (c) 2014 K. Ernest 'iFire' Lee
++
++Permission is hereby granted, free of charge, to any person obtaining
++a copy of this software and associated documentation files (the
++"Software"), to deal in the Software without restriction, including
++without limitation the rights to use, copy, modify, merge, publish,
++distribute, sublicense, and/or sell copies of the Software, and to
++permit persons to whom the Software is furnished to do so, subject to
++the following conditions:
++
++The above copyright notice and this permission notice shall be
++included in all copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
++LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
++OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
++WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
++
++#include "QtCreatorSourceCodeAccessPrivatePCH.h"
++#include "QtCreatorSourceCodeAccessor.h"
++#include "DesktopPlatformModule.h"
++
++#define LOCTEXT_NAMESPACE "QtCreatorSourceCodeAccessor"
++
++bool FXCodeSourceCodeAccessor::CanAccessSourceCode() const
++{
++  return FPaths::FileExists(TEXT("/usr/bin/clang"));
++}
++
++FName FXCodeSourceCodeAccessor::GetFName() const
++{
++  return FName("QtCreatorSourceCodeAccessor");
++}
++
++FText FXCodeSourceCodeAccessor::GetNameText() const 
++{
++  return LOCTEXT("QtCreatorDisplayName", "Qt Creator");
++}
++
++FText FXCodeSourceCodeAccessor::GetDescriptionText() const
++{
++  return LOCTEXT("QtCreatorDisplayDesc", "Open source code files with Qt Creator");
++}
++
++bool FXCodeSourceCodeAccessor::OpenSolution()
++{
++    FString SolutionPath;
++    if(FDesktopPlatformModule::Get()->GetSolutionPath(SolutionPath))
++    {
++      const FString FullPath = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead( *SolutionPath );
++      if ( FPaths::FileExists( FullPath ) )
++      {
++        FString Editor = FString(TEXT("/usr/bin/qtcreator"));
++        FString Args = FString(TEXT("-client "));
++        Args.Append(FullPath);
++        if(FLinuxPlatformProcess::CreateProc(*Editor,
++                                             *Args,
++                                             true,
++                                             true,
++                                             false,
++                                             nullptr,
++                                             0,
++                                             nullptr,
++                                             nullptr).IsValid())
++          return true;
++      }
++    }
++  return false;
++}
++
++bool FXCodeSourceCodeAccessor::OpenFileAtLine(const FString& FullPath, int32 LineNumber, int32 ColumnNumber)
++{
++    FString Editor = FString(TEXT("/usr/bin/qtcreator"));
++    FString Args = FString(TEXT("-client "));                                                           
++    Args.Append(FullPath).Append(TEXT(":")).Append(FString::FromInt(LineNumber));
++    if (FLinuxPlatformProcess::CreateProc(*Editor,
++                                          *Args,
++                                          true,
++                                          true,
++                                          false,
++                                          nullptr,
++                                          0,
++                                          nullptr,
++                                          nullptr).IsValid())
++      return true;
++  return false;
++}
++
++bool FXCodeSourceCodeAccessor::OpenSourceFiles(const TArray<FString>& AbsoluteSourcePaths) 
++{
++  for ( const FString& SourcePath : AbsoluteSourcePaths ) 
++  {
++    FString Editor = FString(TEXT("/usr/bin/qtcreator"));
++    FString Args = FString(TEXT("-client "));
++    Args.Append(SourcePath);
++    if(!(FLinuxPlatformProcess::CreateProc(*Editor,
++                                           *Args,
++                                           true,
++                                           true,
++                                           false,
++                                           nullptr,
++                                           0,
++                                           nullptr,
++                                           nullptr).IsValid())) 
++        return false;
++  }  
++  return true;
++}
++
++bool FXCodeSourceCodeAccessor::SaveAllOpenDocuments() const
++{
++  return false;
++}
++
++void FXCodeSourceCodeAccessor::Tick(const float DeltaTime) 
++{
++
++}
++
++#undef LOCTEXT_NAMESPACE
+diff --git a/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessor.h b/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessor.h
+new file mode 100644
+index 0000000..baa8758
+--- /dev/null
++++ b/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/Private/QtCreatorSourceCodeAccessor.h
+@@ -0,0 +1,39 @@
++/* Copyright (c) 2014 K. Ernest 'iFire' Lee
++
++Permission is hereby granted, free of charge, to any person obtaining
++a copy of this software and associated documentation files (the
++"Software"), to deal in the Software without restriction, including
++without limitation the rights to use, copy, modify, merge, publish,
++distribute, sublicense, and/or sell copies of the Software, and to
++permit persons to whom the Software is furnished to do so, subject to
++the following conditions:
++
++The above copyright notice and this permission notice shall be
++included in all copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
++LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
++OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
++WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
++
++#pragma once
++
++#include "ISourceCodeAccessor.h"
++
++class FXCodeSourceCodeAccessor : public ISourceCodeAccessor
++{
++public:
++	/** ISourceCodeAccessor implementation */
++	virtual bool CanAccessSourceCode() const override;
++	virtual FName GetFName() const override;
++	virtual FText GetNameText() const override;
++	virtual FText GetDescriptionText() const override;
++	virtual bool OpenSolution() override;
++	virtual bool OpenFileAtLine(const FString& FullPath, int32 LineNumber, int32 ColumnNumber = 0) override;
++	virtual bool OpenSourceFiles(const TArray<FString>& AbsoluteSourcePaths) override;
++	virtual bool SaveAllOpenDocuments() const override;
++	virtual void Tick(const float DeltaTime) override;
++};
+diff --git a/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/QtCreatorSourceCodeAccess.Build.cs b/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/QtCreatorSourceCodeAccess.Build.cs
+new file mode 100644
+index 0000000..2c94e9f
+--- /dev/null
++++ b/Engine/Plugins/Developer/QtCreatorSourceCodeAccess/Source/QtCreatorSourceCodeAccess/QtCreatorSourceCodeAccess.Build.cs
+@@ -0,0 +1,38 @@
++/* Copyright (c) 2014 K. Ernest 'iFire' Lee
++
++Permission is hereby granted, free of charge, to any person obtaining
++a copy of this software and associated documentation files (the
++"Software"), to deal in the Software without restriction, including
++without limitation the rights to use, copy, modify, merge, publish,
++distribute, sublicense, and/or sell copies of the Software, and to
++permit persons to whom the Software is furnished to do so, subject to
++the following conditions:
++
++The above copyright notice and this permission notice shall be
++included in all copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
++LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
++OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
++WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
++
++namespace UnrealBuildTool.Rules
++{
++	public class QtCreatorSourceCodeAccess : ModuleRules
++	{
++                 public QtCreatorSourceCodeAccess(TargetInfo Target)
++		 {
++		 	PrivateDependencyModuleNames.AddRange(
++                                new string[]
++				{
++					"Core",
++					"SourceCodeAccess",
++                    "DesktopPlatform"
++				}
++			);
++		}
++	}
++}
+-- 
+1.9.1
+
+
+From 81671913f77bca30b8d556a50dba384667441994 Mon Sep 17 00:00:00 2001
+From: metatomato <metatomato@iglou.gl>
+Date: Mon, 24 Nov 2014 23:14:55 +0100
+Subject: [PATCH 2/3] Add Qt Project Generation Capability
+
+---
+ Engine/Config/Linux/LinuxEngine.ini                   |  2 +-
+ .../DesktopPlatform/Private/DesktopPlatformBase.cpp   | 19 ++++++++++++++++++-
+ .../Private/DesktopPlatformPrivatePCH.h               |  1 +
+ .../Private/GameProjectUtils.cpp                      |  3 ++-
+ 4 files changed, 22 insertions(+), 3 deletions(-)
+
+diff --git a/Engine/Config/Linux/LinuxEngine.ini b/Engine/Config/Linux/LinuxEngine.ini
+index 77494db..3aaff02 100644
+--- a/Engine/Config/Linux/LinuxEngine.ini
++++ b/Engine/Config/Linux/LinuxEngine.ini
+@@ -5,4 +5,4 @@ AudioDeviceModuleName=ALAudio
+ r.setres=1280x720
+ 
+ [/Script/SourceCodeAccess.SourceCodeAccessSettings]
+-PreferredAccessor=SublimeEditorSourceCodeAccessor
++PreferredAccessor=QtCreatorSourceCodeAccessor
+diff --git a/Engine/Source/Developer/DesktopPlatform/Private/DesktopPlatformBase.cpp b/Engine/Source/Developer/DesktopPlatform/Private/DesktopPlatformBase.cpp
+index 99c9207..9179550 100644
+--- a/Engine/Source/Developer/DesktopPlatform/Private/DesktopPlatformBase.cpp
++++ b/Engine/Source/Developer/DesktopPlatform/Private/DesktopPlatformBase.cpp
+@@ -463,6 +463,22 @@ bool FDesktopPlatformBase::GenerateProjectFiles(const FString& RootDir, const FS
+ 	if(bRes)
+ 	{
+ 		bRes = RunUnrealBuildTool(LOCTEXT("GeneratingProjectFiles", "Generating project files..."), RootDir, Arguments, Warn);
++        #if PLATFORM_LINUX
++        FString ProjectPath = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*ProjectFileName);
++        UE_LOG(LogDesktopPlatform, Warning,TEXT("Generating Qt .pro file for %s"),*ProjectPath);
++        FString URL = FString(TEXT("/bin/bash"));
++        FString Args = FString(TEXT("/home/metatomato/WORKSPACE/UNREAL/Tools/QtTools/qtpatch.sh -p "));
++        Args += FString::Printf(TEXT("%s"),*ProjectPath);
++        FLinuxPlatformProcess::CreateProc(*URL,
++                                          *Args,
++                                           true,
++                                           true,
++                                           false,
++                                           nullptr,
++                                           0,
++                                           nullptr,
++                                           nullptr);
++        #endif
+ 	}
+ 	Warn->EndSlowTask();
+ 	return bRes;
+@@ -598,7 +614,8 @@ bool FDesktopPlatformBase::GetSolutionPath(FString& OutSolutionPath)
+ 	const TCHAR* Suffix = TEXT(".xcodeproj/project.pbxproj");
+ #elif PLATFORM_LINUX
+ 	UE_LOG(LogDesktopPlatform, Warning, TEXT("STUBBED: solution file path for Linux"));
+-	const TCHAR* Suffix = TEXT("/stubbed/path/to.solution");
++    //const TCHAR* Suffix = TEXT("/stubbed/path/to.solution");
++    const TCHAR* Suffix = TEXT(".pro");
+ #else
+ 	const TCHAR* Suffix = TEXT(".sln");
+ #endif
+diff --git a/Engine/Source/Developer/DesktopPlatform/Private/DesktopPlatformPrivatePCH.h b/Engine/Source/Developer/DesktopPlatform/Private/DesktopPlatformPrivatePCH.h
+index 5518f50..f6d8202 100644
+--- a/Engine/Source/Developer/DesktopPlatform/Private/DesktopPlatformPrivatePCH.h
++++ b/Engine/Source/Developer/DesktopPlatform/Private/DesktopPlatformPrivatePCH.h
+@@ -14,4 +14,5 @@ DECLARE_LOG_CATEGORY_EXTERN(LogDesktopPlatform, Log, All);
+ #include "Mac/DesktopPlatformMac.h"
+ #elif PLATFORM_LINUX
+ #include "Linux/DesktopPlatformLinux.h"
++#include "Linux/LinuxPlatformProcess.h"
+ #endif
+diff --git a/Engine/Source/Editor/GameProjectGeneration/Private/GameProjectUtils.cpp b/Engine/Source/Editor/GameProjectGeneration/Private/GameProjectUtils.cpp
+index 640c765..57fc1d6 100644
+--- a/Engine/Source/Editor/GameProjectGeneration/Private/GameProjectUtils.cpp
++++ b/Engine/Source/Editor/GameProjectGeneration/Private/GameProjectUtils.cpp
+@@ -475,7 +475,8 @@ bool GameProjectUtils::OpenCodeIDE(const FString& ProjectFile, FText& OutFailRea
+ #elif PLATFORM_MAC
+ 	CodeSolutionFile = SolutionFilenameWithoutExtension + TEXT(".xcodeproj");
+ #elif PLATFORM_LINUX
+-	STUBBED("Linux solution filename");
++    CodeSolutionFile = SolutionFilenameWithoutExtension + TEXT(".pro");
++    //STUBBED("Linux solution filename");
+ #else
+ 	OutFailReason = LOCTEXT( "OpenCodeIDE_UnknownPlatform", "could not open the code editing IDE. The operating system is unknown." );
+ 	return false;
+-- 
+1.9.1
+
+
+From 4cc41ec4e4617dc983e9e1547f110c7e6efe5c6c Mon Sep 17 00:00:00 2001
+From: metatomato <metatomato@iglou.gl>
+Date: Tue, 25 Nov 2014 13:24:03 +0100
+Subject: [PATCH 3/3] Adding QtCreatorProject generation with UE4QtCreator
+ Script
+
+---
+ .../Private/DesktopPlatformBase.cpp                | 23 +++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
+
+diff --git a/Engine/Source/Developer/DesktopPlatform/Private/DesktopPlatformBase.cpp b/Engine/Source/Developer/DesktopPlatform/Private/DesktopPlatformBase.cpp
+index 9179550..4ce716f 100644
+--- a/Engine/Source/Developer/DesktopPlatform/Private/DesktopPlatformBase.cpp
++++ b/Engine/Source/Developer/DesktopPlatform/Private/DesktopPlatformBase.cpp
+@@ -466,18 +466,19 @@ bool FDesktopPlatformBase::GenerateProjectFiles(const FString& RootDir, const FS
+         #if PLATFORM_LINUX
+         FString ProjectPath = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*ProjectFileName);
+         UE_LOG(LogDesktopPlatform, Warning,TEXT("Generating Qt .pro file for %s"),*ProjectPath);
+-        FString URL = FString(TEXT("/bin/bash"));
+-        FString Args = FString(TEXT("/home/metatomato/WORKSPACE/UNREAL/Tools/QtTools/qtpatch.sh -p "));
++        FString URL = FString(TEXT("/usr/bin/UE4QtCreator"));
++        FString Args = FString(TEXT(" -p "));
+         Args += FString::Printf(TEXT("%s"),*ProjectPath);
+-        FLinuxPlatformProcess::CreateProc(*URL,
+-                                          *Args,
+-                                           true,
+-                                           true,
+-                                           false,
+-                                           nullptr,
+-                                           0,
+-                                           nullptr,
+-                                           nullptr);
++        FProcHandle Handle = FLinuxPlatformProcess::CreateProc(*URL,
++                                                               *Args,
++                                                                true,
++                                                                true,
++                                                                false,
++                                                                nullptr,
++                                                                0,
++                                                                nullptr,
++                                                                nullptr );
++        FLinuxPlatformProcess::WaitForProc(Handle);
+         #endif
+ 	}
+ 	Warn->EndSlowTask();
+-- 
+1.9.1
+
