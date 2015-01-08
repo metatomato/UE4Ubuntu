@@ -1,7 +1,28 @@
 # UE4Ubuntu
-All tools and assets for a complete UE4 setup on Ubuntu
+All tools and assets for a complete UE4 setup on Ubuntu.
 
-## Define the UE4 Environment variables
+## Install QtCreator
+From terminal,
+
+      sudo apt-get install qtcreator
+
+or from Ubuntu Software Center, search for and install the *qtcreator* app directly.
+
+## Define UE4 Environment variables
+`UE4_ROOT` : path to the UnrealEngine root source directory,  
+`UE4_BIN` : path to the Linux binaries (UE4Editor, UnrealHeaderTool, UnrealPak...),  
+`UE4_UBT` : path to the UnrealBuildTool launcher script,  
+`UE4Editor` : alias for UE4Editor launcher (walkaround resolving relative path asset dependencies).
+
++ In the *terminal*,
+      cd
+      gedit .bashrc
++ then in *gedit*, replace */path/to* by your UnrealEngine source path (ex: */home/tomato/unreal_source*).
+      export UE4_ROOT='/path/to/UnrealEngine'
+      export UE4_BIN='/path/to/UnrealEngine/Engine/Binaries/Linux'
+      export UE4_UBT='/path/to/UnrealEngine/Engine/Build/BatchFiles/Linux/Build.sh'
+      alias UE4Editor='cd $UE4_BIN && ./UE4Editor'
+
 
 
 ## Install QtCreatorProjectGenerator & Patch UE4 Source
@@ -21,4 +42,3 @@ All tools and assets for a complete UE4 setup on Ubuntu
       cd $UE4_ROOT
       git am --signoff < qtpatch.patch
       rm qtpatch.patch
-      
