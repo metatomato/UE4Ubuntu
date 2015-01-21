@@ -44,10 +44,10 @@ else
 fi
 
 if [ ! -f $PROJECT_PATH/CMakeLists.txt ];then
-$UBT -makefile -project=$project -game -engine -progress
+$UBT -makefile -qmakefile -cmakefile -project=$project -game -engine -progress
 fi
 
-python3 $SCRIPT -e $UE4_ROOT -p $project -b $build -a $add -r $relative -d $CURRENT_DIR
+python3 $SCRIPT -e $UE4_ROOT -p $project -d $CURRENT_DIR
 
 #if [ -z "$relative" ];then
 #    python3 $SCRIPT -e $UE4_ROOT -p $project -b $build -a $add
