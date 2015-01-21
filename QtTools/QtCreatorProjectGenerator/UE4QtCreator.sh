@@ -10,7 +10,7 @@ done
 CURRENT_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 UBT=$UE4_ROOT/Engine/Build/BatchFiles/Linux/Build.sh
-SCRIPT=$CURRENT_DIR/GenerateQtProject.py 
+SCRIPT=$CURRENT_DIR/GenerateQtProject_4_7.py 
 relative=false
 build=true
 add='%s'

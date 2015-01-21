@@ -196,9 +196,9 @@ if len(sys.argv) >= 4:
     
         write_pri()
 
-        write_pro()
+        #write_pro()
 
-        write_pro_user(project_name, project_path)
+        #write_pro_user(project_name, project_path)
                 
         print('Patching Done.')         
     else:
